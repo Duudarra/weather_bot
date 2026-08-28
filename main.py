@@ -343,7 +343,9 @@ async def weather(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     except Exception as e:
-        print("Ошибка:", e)
+        import traceback
+        print("ОШИБКА В WEATHER:")
+        traceback.print_exc()
 
         await update.message.reply_text(
             "АХ ДА ГДЕ Ж ЭТА ПОГОДА, СПРОСИ ПОПОЗЖЕ СНОВА"
