@@ -123,7 +123,7 @@ def get_clothing(temp, feels_like, rain_probability, wind):
 def get_greeting():
     """Выбирает приветствие в зависимости от времени суток."""
 
-    hour = datetime.datetime.now(ZoneInfo("Europe/Moscow")).hour
+    hour = datetime.now(ZoneInfo("Europe/Moscow")).hour
 
     if 5 <= hour < 12:
         messages = [
@@ -166,7 +166,7 @@ def get_greeting():
 def get_love_message(feels_like, rain_probability):
     """Выбирает заботливое сообщение в зависимости от времени и погоды."""
 
-    hour = datetime.datetime.now(ZoneInfo("Europe/Moscow")).hour
+    hour = datetime.now(ZoneInfo("Europe/Moscow")).hour
 
     if 5 <= hour < 12:
         if feels_like <= 0:
