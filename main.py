@@ -27,6 +27,20 @@ LONGITUDE = 49.6680
 CHAT_ID = 1820808404
 ADMIN_CHAT_ID = 747742170
 
+async def message_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Отправляет Котику случайное послание."""
+
+    messages = [
+        "Сегодня я просто хочу напомнить тебе, что ты у меня самый любимый ❤️",
+        "🐾 Маленькое послание для тебя: береги себя, пожалуйста. Ты мне очень важен ❤️",
+        "Если сегодня что-то не получается — ничего страшного. Отдохни и попробуй ещё раз 🫶",
+        "💌 Просто знай: где-то есть человек, который очень сильно о тебе думает.",
+    ]
+
+    message = random.choice(messages)
+
+    await update.message.reply_text(message)
+
 async def send_to_him(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.id != ADMIN_CHAT_ID:
         return
@@ -387,7 +401,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
 
     keyboard = [
-        ["🌤 Узнать погоду"]
+        ["🌤 Узнать погоду"],
+        ["💌 Получить послание"]
     ]
 
     reply_markup = ReplyKeyboardMarkup(
@@ -482,9 +497,20 @@ def main():
         )
 
     application.add_handler(
+                CommandHandler("remind", send_reminder)
+            )
+
+    application.add_handler(
         MessageHandler(
             filters.TEXT & filters.Regex("^🌤 Узнать погоду$"),
             weather
+        )
+    )
+
+    application.add_handler(
+        MessageHandler(
+            filters.TEXT & filters.Regex("^💌 Получить послание$"),
+            message_button
         )
     )
 
