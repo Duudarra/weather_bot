@@ -25,7 +25,43 @@ LONGITUDE = 49.6680
 
 # ID Котика сюда добавим чуть позже
 CHAT_ID = 1820808404
+ADMIN_CHAT_ID = 747742170
 
+async def send_to_him(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id != ADMIN_CHAT_ID:
+        return
+
+    if not context.args:
+        await update.message.reply_text("Напиши сообщение после /send ❤️")
+        return
+
+    text = " ".join(context.args)
+
+    await context.bot.send_message(
+        chat_id=CHAT_ID,
+        text=text
+    )
+
+    await update.message.reply_text("Отправила ❤️")
+
+async def weather_him(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id != ADMIN_CHAT_ID:
+        return
+
+    try:
+        message = make_weather_message()
+
+        await context.bot.send_message(
+            chat_id=CHAT_ID,
+            text=message,
+            parse_mode="HTML"
+        )
+
+        await update.message.reply_text("Прогноз ему отправлен 🌤️❤️")
+
+    except Exception as e:
+        print("Ошибка отправки погоды:", e)
+        await update.message.reply_text("Погода решила сегодня не сотрудничать 😭")    
 
 def get_weather():
     """Получает текущую и дневную погоду в Кирове."""
@@ -233,6 +269,46 @@ def get_love_message(feels_like, rain_probability):
 
     return random.choice(messages)
 
+async def remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id != ADMIN_CHAT_ID:
+        return
+
+    if len(context.args) < 2:
+        await update.message.reply_text(
+            "Формат: /remind 08:30 сообщение"
+        )
+        return
+
+    time_text = context.args[0]
+    text = " ".join(context.args[1:])
+
+    try:
+        hour, minute = map(int, time_text.split(":"))
+
+        context.job_queue.run_once(
+            send_reminder,
+            when=(hour, minute),
+            data=text
+        )
+
+        await update.message.reply_text(
+            f"Хорошо, в {time_text} отправлю ему ❤️"
+        )
+
+    except Exception as e:
+        print("Ошибка:", e)
+        await update.message.reply_text(
+            "Не поняла время 😭 Напиши, например: /remind 08:30 выходи"
+        )
+
+async def send_reminder(context: ContextTypes.DEFAULT_TYPE):
+    text = context.job.data
+
+    await context.bot.send_message(
+        chat_id=CHAT_ID,
+        text=text
+    )
+
 def make_weather_message():
     """Создаёт итоговое сообщение."""
 
@@ -396,6 +472,14 @@ def main():
     application.add_handler(
         CommandHandler("weather", weather)
     )
+
+    application.add_handler(
+        CommandHandler("weatherhim", weather_him)
+    )
+
+    application.add_handler(
+            CommandHandler("send", send_to_him)
+        )
 
     application.add_handler(
         MessageHandler(
