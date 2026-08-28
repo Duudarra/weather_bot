@@ -24,7 +24,7 @@ LATITUDE = 58.6036
 LONGITUDE = 49.6680
 
 # ID Котика сюда добавим чуть позже
-CHAT_ID = 747742170
+CHAT_ID = 1820808404
 
 
 def get_weather():
